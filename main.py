@@ -1,8 +1,8 @@
-'''
+"""
 Created on 1 nov 2022
 
 @author: jcescribano
-'''
+"""
 import csv
 from selenium import webdriver
 from bs4 import BeautifulSoup
@@ -27,15 +27,8 @@ def anadir_datos(nombre_fichero, fila_para_guardar):
         writer = csv.writer(csvfile)
         writer.writerow(fila_para_guardar)
 
-def recuperarInformacion():
-    navegador = abrir_firefox()
-    navegador.get(url)
-    navegador.find_element(By.CLASS_NAME, 'divLogo').click()
-    navegador.find_element(By.ID, 'viewns_Z7_AVEQAI930OBRD02JPMTPG21004_:form1:button1').click()
-    WebDriverWait(navegador, 1000).until(EC.presence_of_element_located((By.CLASS_NAME, "cabeceraTexto")))
-    soup = BeautifulSoup(navegador.page_source, 'html.parser')
-    tbody = soup.find('tbody')
 
+def guardar_datos(tbody):
     for td in tbody.find_all('tr'):
         if td.find(class_="tdExpediente"):
             expediente = td.find(class_="tdExpediente").find_all('div')[0].text
@@ -50,6 +43,16 @@ def recuperarInformacion():
             organoContratacion = td.find(class_='tdOrganoContratacion').text
             fila=[expediente, descripcionExpediente, tipoContrato, estado, importe, fechaLimite, organoContratacion]
             anadir_datos(nombreFichero, fila)
+
+def recuperarInformacion():
+    navegador = abrir_firefox()
+    navegador.get(url)
+    navegador.find_element(By.CLASS_NAME, 'divLogo').click()
+    navegador.find_element(By.ID, 'viewns_Z7_AVEQAI930OBRD02JPMTPG21004_:form1:button1').click()
+    WebDriverWait(navegador, 1000).until(EC.presence_of_element_located((By.CLASS_NAME, "cabeceraTexto")))
+    soup = BeautifulSoup(navegador.page_source, 'html.parser')
+    tbody = soup.find('tbody')
+    guardar_datos(tbody)
     navegador.close()
 
 
