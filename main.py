@@ -14,17 +14,17 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 url = "https://contrataciondelestado.es/wps/portal/licitaciones"
-nombreFichero = 'contratacionTodo.csv'
-pathGecko = "/usr/bin/geckodriver"
-pathFirefox = "/usr/bin/firefox"
+nombre_fichero = 'contratacionTodo.csv'
+path_gecko = "/usr/bin/geckodriver"
+path_firefox = "/usr/bin/firefox"
 
 
 def abrir_firefox():
-    return webdriver.Firefox(executable_path=pathGecko, firefox_binary=pathFirefox)
+    return webdriver.Firefox(executable_path=path_gecko, firefox_binary=path_firefox)
 
 
-def anadir_datos(nombre_fichero, fila_para_guardar):
-    with open(nombre_fichero, 'a', encoding='UTF8', newline='') as csvfile:
+def anadir_datos(nombre_fichero_anadir, fila_para_guardar):
+    with open(nombre_fichero_anadir, 'a', encoding='UTF8', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(fila_para_guardar)
 
@@ -33,19 +33,20 @@ def guardar_datos(tbody):
     for td in tbody.find_all('tr'):
         if td.find(class_="tdExpediente"):
             expediente = td.find(class_="tdExpediente").find_all('div')[0].text
-            descripcionExpediente = td.find(class_="tdExpediente").find_all('div')[1].text
-            listaTipoContrato = td.find(class_='tdTipoContrato').find_all('div')
-            tipoContrato = ""
-            for tc in listaTipoContrato:
-                tipoContrato = tc.text + ";" + tipoContrato
+            descripcion_expediente = td.find(class_="tdExpediente").find_all('div')[1].text
+            lista_tipo_contrato = td.find(class_='tdTipoContrato').find_all('div')
+            tipo_contrato = ""
+            for tc in lista_tipo_contrato:
+                tipo_contrato = tc.text + ";" + tipo_contrato
             estado = td.find(class_='tdEstado').text
             importe = td.find(class_='tdImporte').text
-            fechaLimite = td.find(class_='tdFechaLimite').text
-            organoContratacion = td.find(class_='tdOrganoContratacion').text
-            fila=[expediente, descripcionExpediente, tipoContrato, estado, importe, fechaLimite, organoContratacion]
-            anadir_datos(nombreFichero, fila)
+            fecha_limite = td.find(class_='tdFechaLimite').text
+            organo_contratacion = td.find(class_='tdOrganoContratacion').text
+            fila = [expediente, descripcion_expediente, tipo_contrato, estado, importe, fecha_limite, organo_contratacion]
+            anadir_datos(nombre_fichero, fila)
 
-def recuperarInformacion():
+
+def recuperar_informacion():
     navegador = abrir_firefox()
     navegador.get(url)
     navegador.find_element(By.CLASS_NAME, 'divLogo').click()
@@ -53,20 +54,21 @@ def recuperarInformacion():
     finalizado=False
     contador=1
     while not finalizado:
-        #Falta convertir a string el contador para que lo reconozca
-        WebDriverWait(navegador, 1000).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, ("[id$=textfooterInfoNumPagMAQ]")),str(contador)))
-        pagina_actual = int(navegador.find_element(By.CSS_SELECTOR, ("[id$=textfooterInfoNumPagMAQ]")).text)
-        pagina_final = int(navegador.find_element(By.CSS_SELECTOR, ("[id$=textfooterInfoTotalPaginaMAQ]")).text)
-        #pagina_final="10"
+        WebDriverWait(navegador, 1000).until(EC.text_to_be_present_in_element
+                                             ((By.CSS_SELECTOR, "[id$=textfooterInfoNumPagMAQ]"), str(contador)))
+        pagina_actual = int(navegador.find_element(By.CSS_SELECTOR, "[id$=textfooterInfoNumPagMAQ]").text)
+        pagina_final = int(navegador.find_element(By.CSS_SELECTOR, "[id$=textfooterInfoTotalPaginaMAQ]").text)
+        #pagina_final = "10"
         soup = BeautifulSoup(navegador.page_source, 'html.parser')
-        tbody = soup.find('tbody')
-        guardar_datos(tbody)
-        if (pagina_actual != pagina_final+1):
-            navegador.find_element(By.CSS_SELECTOR, ("[id$=footerSiguiente]")).click()
+        cuerpo_pagina = soup.find('tbody')
+        guardar_datos(cuerpo_pagina)
+        if pagina_actual != (pagina_final + 1):
+            navegador.find_element(By.CSS_SELECTOR, "[id$=footerSiguiente]").click()
             contador = contador + 1
-            print("Se han descargado" + contador + "páginas")
+            print("Se han descargado" + str(contador) + "páginas")
         else:
             finalizado = True
     navegador.close()
 
-recuperarInformacion()
+
+recuperar_informacion()
