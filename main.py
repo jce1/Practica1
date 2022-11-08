@@ -58,7 +58,7 @@ def recuperar_informacion():
                                              ((By.CSS_SELECTOR, "[id$=textfooterInfoNumPagMAQ]"), str(contador)))
         pagina_actual = int(navegador.find_element(By.CSS_SELECTOR, "[id$=textfooterInfoNumPagMAQ]").text)
         pagina_final = int(navegador.find_element(By.CSS_SELECTOR, "[id$=textfooterInfoTotalPaginaMAQ]").text)
-        #pagina_final = "10"
+        #pagina_final = 10
         soup = BeautifulSoup(navegador.page_source, 'html.parser')
         cuerpo_pagina = soup.find('tbody')
         guardar_datos(cuerpo_pagina)
