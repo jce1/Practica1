@@ -22,7 +22,7 @@ path_gecko = "/usr/bin/geckodriver"
 path_firefox = "/usr/bin/firefox"
 
 def abrir_firefox():
-    #Configura, genera y devuelve el driver de selenium para firefox
+    # Configura, genera y devuelve el driver de selenium para firefox
     ops = webdriver.FirefoxOptions()
     ops.binary_location = path_firefox
     # Con el siguiente parametro hacemos que Firefox se ejecute en segundo plano
@@ -34,8 +34,9 @@ def abrir_firefox():
     serv = Service(path_gecko)
     return webdriver.Firefox(service=serv, options=ops)
 
+
 def anadir_datos(nombre_fichero_anadir, fila_para_guardar):
-    #Añado una fila de datos al fichero de salida
+    # Añado una fila de datos al fichero de salida
     with open(nombre_fichero_anadir, 'a', encoding='UTF8', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(fila_para_guardar)
@@ -71,17 +72,16 @@ def recuperar_informacion():
     finalizado=False
     contador=1
     while not finalizado:
-        #La carga de resultados despues de pinchar en el enlace es muy lenta. El siguiente comando se
-        #encarga de esperar hasta que un elemento de la tabla se ha cargado
+        # La carga de resultados despues de pinchar en el enlace es muy lenta. El siguiente comando se
+        # encarga de esperar hasta que un elemento de la tabla se ha cargado
         WebDriverWait(navegador, 1000).until(ec.text_to_be_present_in_element
                                              ((By.CSS_SELECTOR, "[id$=textfooterInfoNumPagMAQ]"), str(contador)))
-        #recupero el número de página en la que se encuentra la navegación
+        # recupero el número de página en la que se encuentra la navegación
         pagina_actual = int(navegador.find_element(By.CSS_SELECTOR, "[id$=textfooterInfoNumPagMAQ]").text)
-        #recupero el número de páginas total
+        # recupero el número de páginas total
         pagina_final = int(navegador.find_element(By.CSS_SELECTOR, "[id$=textfooterInfoTotalPaginaMAQ]").text)
-        #pagina_final = 10
-        #convierto la página a un objeto BeatifulSoup para facilitar el procesado de los elementos
-        #que necesitamos
+        # convierto la página a un objeto BeatifulSoup para facilitar el procesado de los elementos
+        # que necesitamos
         soup = BeautifulSoup(navegador.page_source, 'html.parser')
         cuerpo_pagina = soup.find('tbody')
         guardar_datos(cuerpo_pagina)
