@@ -19,6 +19,4 @@ Un archivo csv para cada mes descargado, formato:
 contratacionTodo_mes_año.csv
 
 DOI en Zenodo
-10.5281/zenodo.7324628
-
-https://zenodo.org/record/7324628
+https://doi.org/10.5281/zenodo.7324628
